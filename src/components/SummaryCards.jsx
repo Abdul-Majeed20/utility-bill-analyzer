@@ -43,7 +43,7 @@ const SummaryCards = ({ summaryData, formatCurrency }) => {
     {
       title: 'Extra Charges',
       value: formatCurrency(extraCharges),
-      icon: <IndianRupee className="h-6 w-6 text-red-500" />,
+      icon:  <p className="h-6 w-6 text-red-500 font-bold">PKR</p>,
       bgColor: 'bg-red-50',
       textColor: 'text-red-700',
       borderColor: 'border-red-200',

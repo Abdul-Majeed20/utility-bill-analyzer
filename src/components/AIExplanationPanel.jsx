@@ -1,101 +1,38 @@
 import React, { useState } from 'react';
 import { Bot, Send, Loader, Lightbulb, AlertCircle, Zap } from 'lucide-react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { generateBillExplanation } from '../redux/features/bill/billApi';
 
 const AIExplanationPanel = ({ billData, formatCurrency }) => {
+  const { billExplanation } = useSelector(state => state.bill);
+  const dispatch = useDispatch();
+
+//  console.log("AIExplanationPanel - billData:", billData);
+ console.log("AIExplanationPanel - billExplanation:", billExplanation);
+
   const [explanation, setExplanation] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+  if (billExplanation) {
+    setExplanation(billExplanation);
+    setShowExplanation(true);
+  }
+}, [billExplanation]);
 
   const generateExplanation = async () => {
     setIsLoading(true);
     setError('');
     
     try {
-      // Safely extract data with fallbacks
-      const units = parseFloat(billData?.units) || 0;
-      const tariffRate = parseFloat(billData?.tariffRate) || 0;
-      const totalBill = parseFloat(billData?.totalBill) || parseFloat(billData?.payableWithinDueDate) || 0;
-      const extraCharges = parseFloat(billData?.extraCharges) || 0;
-      const fuelAdjustment = parseFloat(billData?.fuelAdjustment) || 0;
-      const fcSurcharge = parseFloat(billData?.fcSurcharge) || 0;
-      const quarterlyAdjustment = parseFloat(billData?.quarterlyAdjustment) || 0;
-      const company = billData?.company || 'Pakistani Electricity Company';
-      
-      // Calculate additional metrics for better context
-      const avgCostPerUnit = units > 0 ? (totalBill / units).toFixed(2) : 0;
-      const isHighUsage = units > 30;
-      const baseCost = units * tariffRate;
-      
-      // Construct detailed prompt for OpenAI
-      const messages = [
-        {
-          role: "system",
-          content: "You are a helpful utility bill assistant for Pakistani consumers. You explain electricity bills in simple, easy-to-understand Urdu/English mixed language. Keep responses friendly, practical, and concise (max 150 words). Use emojis and make it feel like a helpful friend explaining."
-        },
-        {
-          role: "user",
-          content: `Please explain this electricity bill in simple Urdu/English mix:
-
-BILL DETAILS:
-- Company: ${company}
-- Units Consumed: ${units} kWh
-- Tariff Rate: Rs ${tariffRate.toFixed(2)} per unit
-- Base Electricity Cost: Rs ${baseCost.toFixed(2)}
-- Fuel Price Adjustment (FPA): Rs ${fuelAdjustment.toFixed(2)}
-- FC Surcharge: Rs ${fcSurcharge.toFixed(2)}
-- Quarterly Tariff Adjustment: Rs ${quarterlyAdjustment.toFixed(2)}
-- Other Extra Charges: Rs ${extraCharges.toFixed(2)}
-- Total Bill Amount: Rs ${totalBill.toFixed(2)}
-- Average Rate per Unit: Rs ${avgCostPerUnit}
-- Usage Status: ${isHighUsage ? 'HIGH (above 30 units)' : 'NORMAL (within 30 units)'}
-
-Please provide:
-1. A warm greeting in Urdu/English mix (start with "Assalam-o-Alaikum!")
-2. Simple breakdown of what they're paying for
-3. ${isHighUsage ? 'Usage is high - give 2 specific tips to reduce it' : 'Usage is normal - praise them and give 1 tip to save more'}
-4. Explain FPA and surcharges in very simple terms
-5. End with an encouraging message`
-        }
-      ];
-
-      // Call OpenAI API
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo', // You can also use 'gpt-4' if you have access
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 400,
-          top_p: 0.8,
-          frequency_penalty: 0.3,
-          presence_penalty: 0.3
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`OpenAI API failed: ${errorData.error?.message || response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Extract the generated text from OpenAI response
-      const generatedText = data.choices?.[0]?.message?.content;
-      
-      if (!generatedText) {
-        throw new Error('No explanation generated');
-      }
-
-      setExplanation(generatedText);
-      setShowExplanation(true);
+     console.log("Dispatching generateBillExplanation with billData:", billData);
+       await dispatch(generateBillExplanation(billData)).unwrap();
       
     } catch (error) {
-      console.error('OpenAI API Error:', error);
+      console.error('Gemini API Error:', error);
       setError(`Failed to generate explanation: ${error.message}. Showing fallback.`);
       
       // Fallback explanation if API fails
