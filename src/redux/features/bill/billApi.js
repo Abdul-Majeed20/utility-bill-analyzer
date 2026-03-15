@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+let API_BASE_URL = import.meta.env.VITE_BILL_API || "http://localhost:3000/api/v1/bill";
 // OCR bill data from image upload
 export const getBillData = createAsyncThunk(
   "bill/getBillData",
@@ -9,7 +10,7 @@ export const getBillData = createAsyncThunk(
       formData.append("image", billImage);
 
       const response = await fetch(
-        "http://localhost:3000/api/v1/bill/get-bill-data",
+        `${API_BASE_URL}/get-bill-data`,
         {
           method: "POST",
           credentials: "include",
@@ -37,7 +38,7 @@ export const submitManualBillData = createAsyncThunk(
   async (billData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/bill/analyze-manual",
+        `${API_BASE_URL}/analyze-manual`,
         {
           method: "POST",
           headers: {
@@ -67,7 +68,7 @@ export const generateBillExplanation = createAsyncThunk(
     try {
       console.log("Submitting bill data for explanation:", billData);
       const response = await fetch(
-        "http://localhost:3000/api/v1/bill/generate-explanation",
+        `${API_BASE_URL}/generate-explanation`,
         {
           method: "POST",
           headers: {
@@ -95,7 +96,7 @@ export const getBillHistory = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/bill/history",
+        `${API_BASE_URL}/history`,
         {
           method: "GET",
           credentials: "include",

@@ -1,8 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+let API_BASE_URL = import.meta.env.VITE_AUTH_API || "http://localhost:3000/api/v1/auth";
+
 export const login = createAsyncThunk("login", async ({ email, password }) => {
   try {
-    const response = await fetch("http://localhost:3000/api/v1/auth/login", {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +27,7 @@ export const register = createAsyncThunk(
   async ({ email, password }) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/v1/auth/register",
+        `${API_BASE_URL}/register`,
         {
           method: "POST",
           headers: {
@@ -47,7 +49,7 @@ export const register = createAsyncThunk(
 
 export const checkUser = createAsyncThunk("me", async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/v1/auth/me", {
+    const response = await fetch(`${API_BASE_URL}/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +68,7 @@ export const checkUser = createAsyncThunk("me", async () => {
 
 export const logout = createAsyncThunk("logout", async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/v1/auth/logout", {
+    const response = await fetch(`${API_BASE_URL}/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
