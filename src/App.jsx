@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import BillHistory from "./components/BillHistory"
+import NotFound from "./components/NotFound";
+
 function App() {
   return (
     <>
@@ -26,6 +28,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       <ToastContainer
