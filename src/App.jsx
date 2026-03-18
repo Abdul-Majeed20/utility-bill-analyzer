@@ -7,8 +7,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import BillHistory from "./components/billHistory";
-
+import BillHistory from "./components/BillHistory"
 function App() {
   return (
     <>
